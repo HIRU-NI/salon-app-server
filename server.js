@@ -9,7 +9,6 @@ app.use(
   cors({
     origin: "*",
     methods: ["GET", "POST"],
-
     allowedHeaders: ["Content-Type"],
   })
 )
@@ -48,4 +47,4 @@ app.post("/create-checkout-session", async (req, res) => {
   }
 })
 
-app.listen(8080)
+app.listen(process.env.PORT || 8080)
