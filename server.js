@@ -1,6 +1,5 @@
 require("dotenv").config()
 
-const nodemailer = require("nodemailer")
 const cors = require("cors")
 
 const express = require("express")
@@ -40,27 +39,10 @@ app.post("/create-checkout-session", async (req, res) => {
           quantity: 1,
         },
       ],
-      success_url: `${process.env.CLIENT_URL}/success`,
-      cancel_url: `${process.env.CLIENT_URL}/booking`,
+      success_url: `${req.body.baseURL}/success`,
+      cancel_url: `${req.body.baseURL}/booking`,
     })
     res.json({ url: session.url })
-    let testAccount = await nodemailer.createTestAccount()
-    let transporter = nodemailer.createTransport({
-      host: "smtp.ethereal.email",
-      port: 587,
-      secure: false, // true for 465, false for other ports
-      auth: {
-        user: testAccount.user, // generated ethereal user
-        pass: testAccount.pass, // generated ethereal password
-      },
-    })
-    let info = await transporter.sendMail({
-      from: '"Fred Foo 👻" <hirunimanth@gmail.com>', // sender address
-      to: "bar@example.com, hirunimanth@gmail.com", // list of receivers
-      subject: "Hello ✔", // Subject line
-      text: "Hello world?", // plain text body
-      html: "<b>Hello world?</b>", // html body
-    })
   } catch (e) {
     res.status(500).json({ error: e.message })
   }
