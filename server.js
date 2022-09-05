@@ -17,6 +17,8 @@ app.options("*", cors())
 
 const stripe = require("stripe")(process.env.STRIPE_PRIVATE_KEY)
 
+const Sib = require("sib-api-v3-sdk")
+
 const services = new Map([
   [001, { title: "Haircut", amount: 2500 }],
   [002, { title: "Hair style", amount: 5000 }],
@@ -43,6 +45,47 @@ app.post("/create-checkout-session", async (req, res) => {
       cancel_url: `${req.body.baseURL}/booking`,
     })
     res.json({ url: session.url })
+  } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
+})
+
+const client = Sib.ApiClient.instance
+const apiKey = client.authentications["api-key"]
+apiKey.apiKey = process.env.API_KEY
+
+const tranEmailApi = new Sib.TransactionalEmailsApi()
+
+const sender = {
+  email: "hirunimanth@gmail.com",
+  name: "Salon",
+}
+const receivers = [
+  {
+    email: "hirunimanth@gmail.com",
+  },
+]
+
+app.post("/send-email", async (req, res) => {
+  try {
+    tranEmailApi
+      .sendTransacEmail({
+        sender,
+        to: receivers,
+        subject: "Subscribe to Cules Coding to become a developer",
+        textContent: `
+          Cules Coding will teach you how to become {{params.role}} a developer.
+          `,
+        htmlContent: `
+          <h1>Cules Coding</h1>
+          <a href="https://cules-coding.vercel.app/">Visit</a>
+                  `,
+        params: {
+          role: "Frontend",
+        },
+      })
+      .then(res.json())
+      .catch(res.status(500).json({ error: e.message }))
   } catch (e) {
     res.status(500).json({ error: e.message })
   }
