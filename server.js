@@ -25,9 +25,7 @@ const services = new Map([
 app.post("/create-checkout-session", async (req, res) => {
   try {
     res.setHeader("Access-Control-Allow-Origin", "*")
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type")
-    res.setHeader("Access-Control-Allow-Credentials", true)
+    res.setHeader("Access-Control-Allow-Headers", "X-Requested-With")
     const serviceItem = services.get(parseInt(req.body.id))
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
